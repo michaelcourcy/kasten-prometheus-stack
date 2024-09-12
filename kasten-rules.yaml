@@ -1,0 +1,59 @@
+###############
+# Kasten rules
+###############
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    release: prom
+  name: kasten-rules
+  namespace: kasten-io
+spec:
+  groups:
+  - name: ./kasten.rules
+    rules:
+    - alert: catalog-over-50-percent
+      expr: 100-catalog_persistent_volume_free_space_percent > 50
+      labels:
+        severity: warning 
+        namespace: kasten-io    
+      annotations:
+        summary: "The size of the catalog is over 50 %."
+        description: "The size of the catalog is over 50 % : {{ $value }} %."
+        runbook_url: "https://docs.kasten.io/latest/references/best-practices.html#monitoring-and-alerting"
+    - alert: action-on-error
+      expr: increase(catalog_actions_count{status="failed"}[1h])>0 
+      labels:
+        severity: critical        
+      annotations:
+        summary: "Action on error"
+        description: "The action of type {{ $labels.type}} executed on policy {{ $labels.policy}} for the namespace {{ $labels.namespace}} is on error."
+        runbook_url: "https://docs.kasten.io/latest/operating/support.html"
+    - alert: license-non-compliant
+      expr: metering_license_compliance_status == 0 
+      labels:
+        severity: warning  
+        namespace: kasten-io    
+      annotations:
+        summary: "License non compliant"
+        description: "Your license is non compliant, please check on the dashboard Settings > Licensing."
+        runbook_url: "https://docs.kasten.io/latest/multicluster/concepts/license.html"
+    - alert: kasten-service-down 
+      expr: up{application="k10"} == 0
+      labels:
+        severity: critical 
+        namespace: kasten-io  
+      annotations:
+        summary: "A kasten service is down"
+        description: "The kasten service {{ $labels.service }} is down."
+        runbook_url: "https://docs.kasten.io/latest/operating/support.html"
+    - alert: kasten-executor-down 
+      expr: up{app="k10"} == 0
+      labels:
+        severity: critical 
+        namespace: kasten-io     
+      annotations:
+        summary: "A kasten service is down"
+        description: "The kasten service {{ $labels.service }} is down."
+        runbook_url: "https://docs.kasten.io/latest/operating/support.html"
+    
