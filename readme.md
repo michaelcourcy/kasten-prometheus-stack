@@ -49,14 +49,14 @@ There is no real need to expose publically the UI and only administrator will wo
 
 Execute :
 ```
-kubectl port-forward service/prom-kube-prometheus-stack-prometheus 9090:9090
+kubectl port-forward -n monitoring service/prom-kube-prometheus-stack-prometheus 9090:9090
 ```
 Go to the prometheus UI  http://localhost:9090
 
 
 Execute  
 ```
-kubectl port-forward service/prom-kube-prometheus-stack-alertmanager 9093:9093
+kubectl port-forward -n monitoring service/prom-kube-prometheus-stack-alertmanager 9093:9093
 ```
 Go to the alertmanager UI http://localhost:9093
 
@@ -119,6 +119,8 @@ protected anymore.
  immediately at risk.
 - kasten-service-down and kasten-executor-down: detect if one of the kasten service or one of the kasten 
 executor is down. If that happens it's a very bad sign and 
+- kasten-event-group: different global events that kasten can send, for instance kasten has detected that an
+an attempt to tamper an immutable backup has been done or a policy does not validate anymore.
 
 To check your rules are properly deployed go in the prometheus UI > Status > Rules and check that you have 
 an entry `./kasten.rules`. Check that the rules are OK, you should see the last evaluation of the rules.
@@ -393,3 +395,4 @@ We need to give to kasten informations about the prometheus instance monitoring 
 - there is some metrics push (that's why we cannot have an internal and an external prometheus) in the same time
 - kasten produce AND also consumes its metrics (for instance catalog size or services up exposed on the dashboard)
 - you don't want to duplicate your monitoring resource but that's more convenient than mandatory
+

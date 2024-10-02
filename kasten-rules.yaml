@@ -56,4 +56,13 @@ spec:
         summary: "A kasten service is down"
         description: "The kasten service {{ $labels.service }} is down."
         runbook_url: "https://docs.kasten.io/latest/operating/support.html"
+    - alert: kasten-event-group 
+      expr: events_service_event_groups > 0
+      labels:
+        severity: critical 
+        namespace: kasten-io     
+      annotations:
+        summary: "A kasten critical event is detected"
+        description: "The kasten event {{ $labels.action }} has been emmited."
+        runbook_url: "https://docs.kasten.io/latest/operating/support.html"
     
